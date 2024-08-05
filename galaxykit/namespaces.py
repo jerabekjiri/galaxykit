@@ -2,9 +2,9 @@ from . import groups
 from .utils import logger
 
 
-def create_namespace(client, name, group, object_roles=None):
+def create_namespace(client, name, group, object_roles=None, parse_json=True):
     try:
-        get_namespace(client, name)
+        get_namespace(client, name, parse_json)
     except KeyError:
         ns_groups = []
         object_roles = [] if object_roles is None else object_roles
@@ -26,12 +26,14 @@ def create_namespace(client, name, group, object_roles=None):
             add_group(client, name, group, object_roles)
 
 
-def get_namespace(client, name):
+def get_namespace(client, name, parse_json=True):
     try:
-        namespace = client.get(f"v3/namespaces/{name}/")
+        namespace = client.get(f"v3/namespaces/{name}/", parse_json=parse_json)
         return namespace
     except Exception as e:
-        if e.args[0]["status"] == "404":
+        if (parse_json and e.args[0]["status"] == "404") or (
+            parse_json != True and e.args[0] == "404"
+        ):
             raise KeyError(f"No namespace {name} found.")
         else:
             raise
