@@ -3,6 +3,10 @@ from .utils import logger
 
 
 def create_namespace(client, name, group, object_roles=None):
+    logger.debug(f"galaxykit: creating namespace {name}")
+    namespaces = client.get("v3/namespaces/")
+    logger.debug(f"namespaces: {namespaces=}")
+    print(f"namespaces: {namespaces=}", flush=True)
     try:
         get_namespace(client, name)
     except KeyError:
@@ -27,10 +31,17 @@ def create_namespace(client, name, group, object_roles=None):
 
 
 def get_namespace(client, name):
+    logger.debug(f"getting namespace {name}")
+    print(f"getting namespace {name}", flush=True)
     try:
         namespace = client.get(f"v3/namespaces/{name}/")
         return namespace
     except Exception as e:
+        logger.debug(f"error 404 e: {e=}")
+        logger.debug(f"error 404 e.args: {e.args=}")
+        print(f"error 404 e: {e=}", flush=True)
+        print(f"error 404 e.args: {e.args=}", flush=True)
+
         if e.args[0]["status"] == "404":
             raise KeyError(f"No namespace {name} found.")
         else:
