@@ -268,6 +268,10 @@ class GalaxyClient:
         galaxy_ng_version = self.server_version
         return parse_version(galaxy_ng_version) >= parse_version(RBAC_VERSION)
 
+    def make_sure_referer_is_set(self, url):
+        if "Referer" not in self.headers:
+            self.headers.update({ "Referer": url }) 
+
     def _http(self, method, path, *args, **kwargs):
 
         # ensure we have a valid session instead of hoping
@@ -275,6 +279,9 @@ class GalaxyClient:
         self.check_or_refresh_gateway_session()
 
         url = urljoin(self.galaxy_root.rstrip("/") + "/", path)
+
+        self.make_sure_referer_is_set(url)
+
         headers = kwargs.pop("headers", self.headers)
         parse_json = kwargs.pop("parse_json", True)
         relogin = kwargs.pop("relogin", True)
