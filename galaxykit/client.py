@@ -285,7 +285,8 @@ class GalaxyClient:
         url = urljoin(self.galaxy_root.rstrip("/") + "/", path)
 
         headers = kwargs.pop("headers", self.headers)
-        headers = self.make_sure_referer_is_set(headers, url)
+        if headers is not None:
+            headers = self.make_sure_referer_is_set(headers, url)
 
         parse_json = kwargs.pop("parse_json", True)
         relogin = kwargs.pop("relogin", True)
